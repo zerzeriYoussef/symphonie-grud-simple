@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: symfony.Dockerfile
+    container_name: symfony7_tp4
+    working_dir: /var/www
+    volumes:
+      - ./tp6_symfony-main:/var/www
+      - ./tp6_symfony-main/.env:/var/www/.env
+    ports:
+      - "7000:8000"
+    environment:
+      - APP_ENV=dev
+      - APP_DEBUG=1
+      - APP_SECRET=your_secret_here
+      - DATABASE_URL=mysql://root:@host.docker.internal:3306/symfony7_tp4

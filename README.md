@@ -49,6 +49,7 @@ A Symfony 7.2 application for managing articles and categories.
 - Article management (create, read, update, delete)
 - Category management
 - Article categorization
+- Article price range search (find articles with prices between two values)
 
 ## License
 

@@ -6,6 +6,7 @@ use App\Entity\Article;
 use App\Entity\Category;
 use App\Form\ArticleType;
 use App\Form\CategoryType;
+use App\Form\PriceRangeType;
 use App\Repository\ArticleRepository;
 use App\Repository\CategoryRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -80,6 +81,37 @@ class IndexController extends AbstractController
         
         $this->addFlash('success', 'Article supprimé avec succès');
         return $this->redirectToRoute('article_list');
+    }
+
+    #[Route('/articles/price-range', name: 'article_price_range')]
+    public function searchByPriceRange(Request $request, ArticleRepository $articleRepository): Response
+    {
+        $form = $this->createForm(PriceRangeType::class);
+        $form->handleRequest($request);
+        
+        $articles = [];
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $minPrice = $data['minPrice'];
+            $maxPrice = $data['maxPrice'];
+            
+            if ($minPrice > $maxPrice) {
+                $this->addFlash('error', 'Le prix minimum doit être inférieur au prix maximum');
+            } else {
+                $articles = $articleRepository->findByPriceRange($minPrice, $maxPrice);
+                
+                if (count($articles) === 0) {
+                    $this->addFlash('info', 'Aucun article trouvé dans cette gamme de prix');
+                }
+            }
+        }
+        
+        return $this->render('articles/price_range.html.twig', [
+            'form' => $form->createView(),
+            'articles' => $articles,
+            'search_performed' => $form->isSubmitted() && $form->isValid(),
+        ]);
     }
 
     #[Route('/category/newCat', name: 'new_category')]
